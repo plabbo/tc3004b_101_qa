@@ -11,30 +11,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Use Node.js
-      uses: actions/setup-node@v2
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: '14.x'
-    
-    - name: Install dependencies
+
+    - name: Install Dependencies
       run: |
-        npm install selenium-webdriver
-        npm install mocha
-        npm install chromedriver
-    
+        npm install
+
     - name: Install Chrome
+      uses: browser-actions/setup-chrome@v1
+
+    - name: Install ChromeDriver
       run: |
-        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-        sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
-    
-    - name: Start HTTP server
-      run: |
-        python -m http.server 8000 &
-        sleep 5
-    
-    - name: Run tests
-      run: npx mocha tests/**/*.js
+        CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
+        CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSI
