@@ -30,12 +30,12 @@ jobs:
 
     - name: Get Chrome version
       run: |
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,2)
+        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,3)
         echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_ENV
 
     - name: Install ChromeDriver
       run: |
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,2)
+        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,3)
         echo "CHROME_VERSION=$CHROME_VERSION"  # Debugging the version
         # Fetch the correct ChromeDriver version
         CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
