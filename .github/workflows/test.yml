@@ -37,4 +37,4 @@ jobs:
         sleep 5
     
     - name: Run tests
-      run: npx mocha tests/subtraction-tests.js
+      run: npx mocha tests/**/*.js
