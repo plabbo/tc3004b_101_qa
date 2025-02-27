@@ -30,16 +30,24 @@ jobs:
 
     - name: Get Chrome version
       run: |
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,3)
+        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,2)
         echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_ENV
 
     - name: Install ChromeDriver
       run: |
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,3)
-        echo "CHROME_VERSION=$CHROME_VERSION"  # Debugging the version
-        # Fetch the correct ChromeDriver version
+        # Fetch the correct ChromeDriver version based on the Chrome version
+        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,2)
+        echo "CHROME_VERSION=$CHROME_VERSION"
+        
+        # Fetch the latest release compatible with this Chrome version
         CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
-        echo "CHROMEDRIVER_VERSION=$CHROMEDRIVER_VERSION"  # Debugging the version
+        
+        if [ -z "$CHROMEDRIVER_VERSION" ]; then
+          echo "Could not find the matching ChromeDriver version for $CHROME_VERSION. Please check the version compatibility."
+          exit 1
+        fi
+        
+        echo "CHROMEDRIVER_VERSION=$CHROMEDRIVER_VERSION"
         wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
