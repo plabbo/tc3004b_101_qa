@@ -1,0 +1,14 @@
+{
+    "name": "calculator-qa",
+    "version": "1.0.0",
+    "description": "QA module calculator tests",
+    "main": "index.js",
+    "scripts": {
+      "test": "mocha tests/subtraction-tests.js"
+    },
+    "dependencies": {
+      "selenium-webdriver": "^4.0.0",
+      "mocha": "^11.1.0",
+      "chromedriver": "^96.0.0"
+    }
+  }
