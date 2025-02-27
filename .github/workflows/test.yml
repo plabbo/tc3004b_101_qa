@@ -27,9 +27,28 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y google-chrome-stable
+
+    - name: Get Chrome version
+      run: |
         CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
         echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_ENV
+
     - name: Install ChromeDriver
       run: |
         CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
-        CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSI
+        CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+        echo "CHROMEDRIVER_VERSION=$CHROMEDRIVER_VERSION" >> $GITHUB_ENV
+        wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+        unzip chromedriver_linux64.zip
+        sudo mv chromedriver /usr/local/bin/
+    
+    - name: Start HTTP server
+      run: |
+        python3 -m http.server 8000 &
+        sleep 5
+    
+    - name: Run tests
+      run: npx mocha tests/**/*.js
+
+
+        
