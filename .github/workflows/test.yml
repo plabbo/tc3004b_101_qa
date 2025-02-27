@@ -30,19 +30,20 @@ jobs:
 
     - name: Get Chrome version
       run: |
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
+        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,2)
         echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_ENV
 
     - name: Install ChromeDriver
       run: |
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
-        # Fetch the correct version of ChromeDriver based on the installed Chrome version
+        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1,2)
+        echo "CHROME_VERSION=$CHROME_VERSION"  # Debugging the version
+        # Fetch the correct ChromeDriver version
         CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
-        echo "CHROMEDRIVER_VERSION=$CHROMEDRIVER_VERSION" >> $GITHUB_ENV
+        echo "CHROMEDRIVER_VERSION=$CHROMEDRIVER_VERSION"  # Debugging the version
         wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
-    
+
     - name: Start HTTP server
       run: |
         python3 -m http.server 8000 &
