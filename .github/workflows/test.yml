@@ -35,10 +35,10 @@ jobs:
           sleep 10 &&
           curl http://localhost:8000
 
-      - run: |
-          cd tests
-          npm install
-          npx mocha *.js
+      - run: npm install
+        working-directory: tests
+
+      - run: npx mocha *.js
         working-directory: tests
 
       - uses: actions/upload-artifact@v4
