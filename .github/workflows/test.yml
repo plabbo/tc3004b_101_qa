@@ -59,7 +59,7 @@ jobs:
 
             npm install
 
-            ./node_modules/.bin/mocha *.js
+            npx mocha tests/*.js
 
        
 
