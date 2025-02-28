@@ -19,6 +19,11 @@ jobs:
         with:
           node-version: '20'
 
+      - run: |
+          apt-get update
+          apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libxcomposite1 libxrandr2 libasound2 libpangocairo-1.0-0 libgtk-3-0
+        shell: bash
+
       - uses: browser-actions/setup-chrome@v1
         with:
           chrome-version: 120
@@ -30,7 +35,7 @@ jobs:
 
       - run: |
           npm install
-          npm install mocha --save-dev  # Ensure Mocha is installed
+          npm install mocha --save-dev
           chmod +x ./node_modules/.bin/mocha
           npx --no-install mocha tests/*.js
 
