@@ -38,15 +38,21 @@ jobs:
           CHROME_VERSION=$(google-chrome-stable --version | cut -d' ' -f3 | cut -d. -f1)
           echo "Chrome Version: $CHROME_VERSION"
       
+          # If Chrome version is 133 (unsupported), fall back to version 114
+          if [ "$CHROME_VERSION" -eq 133 ]; then
+            echo "Chrome version 133 is not supported. Falling back to Chrome 114."
+            CHROME_VERSION=114
+          fi
+          
           # Attempt to fetch the ChromeDriver version for the detected Chrome version
           CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-      
-          # If no ChromeDriver version is found, fall back to the latest available version
+          
+          # If no ChromeDriver version is found, fall back to the latest stable version
           if [ -z "$CHROMEDRIVER_VERSION" ]; then
             echo "No matching ChromeDriver version found for Chrome $CHROME_VERSION. Falling back to the latest stable version."
             CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
           fi
-      
+          
           echo "Using ChromeDriver Version: $CHROMEDRIVER_VERSION"
           
           wget -q -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
@@ -56,6 +62,7 @@ jobs:
           # Debugging: Check if chromedriver was installed correctly
           chromedriver --version
           which chromedriver
+      
       
       
     
