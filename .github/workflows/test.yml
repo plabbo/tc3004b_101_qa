@@ -1,83 +1,74 @@
-name: Run Tests
+
+name: Run tests
+
+ 
 
 on:
-  push:
-    branches: [ main ]
+
+  workflow_dispatch:
   pull_request:
-    branches: [ main ]
+  
 
 jobs:
+
   test:
-    runs-on: ubuntu-latest
+
+    name: Test
+
+    runs-on: ubuntu-22.04
+
+ 
+
+    container:
+
+      image: node:20
+
+ 
 
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Use Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16.x'
-    
-    - name: Install dependencies
-      run: |
-        cd tests
-        npm install
-        chmod +x node_modules/.bin/mocha
-    
-    - name: Setup Chrome
-      uses: browser-actions/setup-chrome@latest
-      with:
-        chrome-version: stable
-    
-    - name: Install ChromeDriver
-      run: |
-          # Check if Chrome is already installed
-          google-chrome-stable --version || sudo apt-get install -y google-chrome-stable
-          
-          # Get Chrome version and extract major version number
-          CHROME_VERSION=$(google-chrome-stable --version | cut -d' ' -f3 | cut -d. -f1)
-          echo "Chrome Version: $CHROME_VERSION"
-      
-          # If Chrome version is 133 (unsupported), fall back to version 114
-          if [ "$CHROME_VERSION" -eq 133 ]; then
-            echo "Chrome version 133 is not supported. Falling back to Chrome 114."
-            CHROME_VERSION=114
-          fi
-          
-          # Attempt to fetch the ChromeDriver version for the detected Chrome version
-          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-          
-          # If no ChromeDriver version is found, fall back to the latest stable version
-          if [ -z "$CHROMEDRIVER_VERSION" ]; then
-            echo "No matching ChromeDriver version found for Chrome $CHROME_VERSION. Falling back to the latest stable version."
-            CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
-          fi
-          
-          echo "Using ChromeDriver Version: $CHROMEDRIVER_VERSION"
-          
-          wget -q -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-          sudo unzip /tmp/chromedriver.zip -d /usr/local/bin/
-          sudo chmod +x /usr/local/bin/chromedriver
-          
-          # Debugging: Check if chromedriver was installed correctly
-          chromedriver --version
-          which chromedriver
-      
-      
-      
-    
-    - name: Start HTTP server
-      run: |
-        cd src
-        python -m http.server 8000 & 
-        sleep 5
-    
-    - name: Display Chrome and ChromeDriver versions
-      run: |
-        google-chrome --version
-        chromedriver --version
 
-    - name: Run tests
-      run: |
-        cd tests
-        npm run test
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+
+        with:
+
+          node-version: '20'
+
+      - uses: browser-actions/setup-chrome@v1
+
+        with:
+
+          chrome-version: 120
+
+          install-dependencies: true
+
+      - run: |
+
+            cd src
+
+            python3 -m http.server 8000 &
+
+            sleep 10 &&
+
+            curl http://localhost:8000
+
+            cd ..
+
+            cd tests
+
+            npm install
+
+            ./node_modules/.bin/mocha *.js
+
+       
+
+      - uses: actions/upload-artifact@v4
+
+        if: always()
+
+        with:
+
+          name: screenshots
+
+          path: screenshots/
