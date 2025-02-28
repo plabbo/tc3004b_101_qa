@@ -1,74 +1,41 @@
-
 name: Run tests
 
- 
-
 on:
-
   workflow_dispatch:
   pull_request:
-  
 
 jobs:
-
   test:
-
     name: Test
-
     runs-on: ubuntu-22.04
 
- 
-
     container:
-
       image: node:20
 
- 
-
     steps:
-
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
-
         with:
-
           node-version: '20'
 
       - uses: browser-actions/setup-chrome@v1
-
         with:
-
           chrome-version: 120
 
-          install-dependencies: true
+      - run: |
+          python3 -m http.server 8000 &
+          sleep 10 &&
+          curl http://localhost:8000
 
       - run: |
-
-            cd src
-
-            python3 -m http.server 8000 &
-
-            sleep 10 &&
-
-            curl http://localhost:8000
-
-            cd ..
-
-            cd tests
-
-            npm install
-
-            npx mocha tests/*.js
-
-       
+          npm install
+          npm install mocha --save-dev  # Ensure Mocha is installed
+          chmod +x ./node_modules/.bin/mocha
+          npx --no-install mocha tests/*.js
 
       - uses: actions/upload-artifact@v4
-
         if: always()
-
         with:
-
           name: screenshots
-
           path: screenshots/
