@@ -1,4 +1,4 @@
-# Updated workflow file to fix permission issues 
+# Updated workflow file to fix Chrome driver issues
 name: Run Tests
 
 on:
@@ -19,22 +19,24 @@ jobs:
       with:
         node-version: '16.x'
     
-    - name: List directory structure
-      run: find . -type f | grep -v "node_modules" | sort
-    
     - name: Install dependencies
       run: |
         cd tests
         npm install
-        # Ensure mocha is executable
         chmod +x node_modules/.bin/mocha
     
-    - name: Install Chrome
+    - name: Setup Chrome
+      uses: browser-actions/setup-chrome@latest
+      with:
+        chrome-version: stable
+    
+    - name: Install ChromeDriver
       run: |
-        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-        sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
+        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1)
+        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+        wget -q -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+        sudo unzip /tmp/chromedriver.zip -d /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
     
     - name: Start HTTP server
       run: |
@@ -42,8 +44,12 @@ jobs:
         python -m http.server 8000 &
         sleep 5
     
+    - name: Display Chrome and ChromeDriver versions
+      run: |
+        google-chrome --version
+        chromedriver --version
+
     - name: Run tests
       run: |
         cd tests
-        # Use npm run test instead of direct mocha call
         npm run test
