@@ -38,17 +38,25 @@ jobs:
           CHROME_VERSION=$(google-chrome-stable --version | cut -d' ' -f3 | cut -d. -f1)
           echo "Chrome Version: $CHROME_VERSION"
       
-          # Fetch ChromeDriver version and install it
+          # Attempt to fetch the ChromeDriver version for the detected Chrome version
           CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-          echo "ChromeDriver Version: $CHROMEDRIVER_VERSION"
+      
+          # If no ChromeDriver version is found, fall back to the latest available version
+          if [ -z "$CHROMEDRIVER_VERSION" ]; then
+            echo "No matching ChromeDriver version found for Chrome $CHROME_VERSION. Falling back to the latest stable version."
+            CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
+          fi
+      
+          echo "Using ChromeDriver Version: $CHROMEDRIVER_VERSION"
           
           wget -q -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
           sudo unzip /tmp/chromedriver.zip -d /usr/local/bin/
           sudo chmod +x /usr/local/bin/chromedriver
-      
+          
           # Debugging: Check if chromedriver was installed correctly
           chromedriver --version
           which chromedriver
+      
       
     
     - name: Start HTTP server
