@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "11.spec.js",
   "scripts": {
-    "test": "mocha *.spec.js"
+    "test": "npx mocha *.spec.js"
   },
   "author": "",
   "license": "ISC",
