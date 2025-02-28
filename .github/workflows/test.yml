@@ -31,18 +31,17 @@ jobs:
     
     - name: Install ChromeDriver
       run: |
-        # Install Google Chrome
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
-        
-        # Fetch the installed Chrome version
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1)
-        
-        # Get ChromeDriver version and install it
-        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-        wget -q -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-        sudo unzip /tmp/chromedriver.zip -d /usr/local/bin/
-        sudo chmod +x /usr/local/bin/chromedriver
+          # Check if Chrome is already installed
+          google-chrome-stable --version || sudo apt-get install -y google-chrome-stable
+          
+          # Get Chrome version and extract major version number
+          CHROME_VERSION=$(google-chrome-stable --version | cut -d' ' -f3 | cut -d. -f1)
+      
+          # Fetch ChromeDriver version and install it
+          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+          wget -q -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+          sudo unzip /tmp/chromedriver.zip -d /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
     
     - name: Start HTTP server
       run: |
