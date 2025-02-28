@@ -21,8 +21,8 @@ jobs:
 
       - run: |
           apt-get update
-          apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libxcomposite1 \
-            libxrandr2 libasound2 libpangocairo-1.0-0 libgtk-3-0 libgbm1 libdrm2
+          apt-get install -y libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
+            libxcomposite1 libxrandr2 libasound2 libpangocairo-1.0-0 libgtk-3-0 libgbm1 libdrm2
         shell: bash
 
       - uses: browser-actions/setup-chrome@v1
@@ -30,15 +30,16 @@ jobs:
           chrome-version: 120
 
       - run: |
+          cd src
           python3 -m http.server 8000 &
           sleep 10 &&
           curl http://localhost:8000
 
       - run: |
+          cd tests
           npm install
-          npm install mocha --save-dev
-          chmod +x ./node_modules/.bin/mocha
-          npx --no-install mocha tests/*.js
+          npx mocha *.js
+        working-directory: tests
 
       - uses: actions/upload-artifact@v4
         if: always()
