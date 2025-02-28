@@ -26,6 +26,8 @@ jobs:
       run: |
         cd tests
         npm install
+        # Ensure mocha is executable
+        chmod +x node_modules/.bin/mocha
     
     - name: Install Chrome
       run: |
@@ -43,4 +45,5 @@ jobs:
     - name: Run tests
       run: |
         cd tests
-        npx mocha *.spec.js
+        # Use npm run test instead of direct mocha call
+        npm run test
