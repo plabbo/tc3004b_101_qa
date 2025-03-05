@@ -1,4 +1,3 @@
-// 1. Negative Numbers Subtraction Test
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 const fs = require('fs');
@@ -6,26 +5,25 @@ const assert = require('assert');
 
 // Helper function to create a base test setup
 function createBaseTest(testName) {
-    describe(testName, function() {
-        this.timeout(30000);
-        let driver;
+    // Create screenshots directory if it doesn't exist
+    if (!fs.existsSync('./screenshots')) {
+        fs.mkdirSync('./screenshots');
+    }
 
-        // Create screenshots directory if it doesn't exist
-        if (!fs.existsSync('./screenshots')) {
-            fs.mkdirSync('./screenshots');
-        }
-
-        beforeEach(async function() {
+    // Return an object with setup and teardown functions
+    return {
+        setup: async function() {
             const options = new chrome.Options();
             options.addArguments('--headless', '--no-sandbox', '--disable-dev-shm-usage');
 
-            driver = await new Builder()
+            const driver = await new Builder()
                 .forBrowser('chrome')
                 .setChromeOptions(options)
                 .build();
-        });
 
-        afterEach(async function () {
+            return driver;
+        },
+        teardown: async function(driver, testName) {
             if (driver) {
                 // Take a screenshot
                 const safeName = testName.replace(/\s+/g, '_').toLowerCase();
@@ -35,15 +33,23 @@ function createBaseTest(testName) {
                 // Close the browser
                 await driver.quit();
             }
-        });
-
-        return { driver, fs };
-    });
+        }
+    };
 }
 
-// 1. Negative Numbers Subtraction Test
+// Negative Numbers Subtraction Test
 describe('Negative Numbers Subtraction Test', function() {
-    const { driver, fs } = createBaseTest('Negative Numbers Subtraction Test');
+    this.timeout(30000);
+    let driver;
+    const baseTest = createBaseTest('Negative Numbers Subtraction Test');
+
+    beforeEach(async function() {
+        driver = await baseTest.setup();
+    });
+
+    afterEach(async function() {
+        await baseTest.teardown(driver, this.currentTest.title);
+    });
 
     it('Subtracts negative numbers correctly', async function() {
         await driver.get("http://localhost:8000/");
@@ -68,9 +74,19 @@ describe('Negative Numbers Subtraction Test', function() {
     });
 });
 
-// 2. Zero Input Test
+// Zero Input Subtraction Test
 describe('Zero Input Subtraction Test', function() {
-    const { driver, fs } = createBaseTest('Zero Input Subtraction Test');
+    this.timeout(30000);
+    let driver;
+    const baseTest = createBaseTest('Zero Input Subtraction Test');
+
+    beforeEach(async function() {
+        driver = await baseTest.setup();
+    });
+
+    afterEach(async function() {
+        await baseTest.teardown(driver, this.currentTest.title);
+    });
 
     it('Handles zero inputs in subtraction', async function() {
         await driver.get("http://localhost:8000/");
@@ -92,9 +108,19 @@ describe('Zero Input Subtraction Test', function() {
     });
 });
 
-// 3. Positive Numbers Subtraction Test
+// Positive Numbers Subtraction Test
 describe('Positive Numbers Subtraction Test', function() {
-    const { driver, fs } = createBaseTest('Positive Numbers Subtraction Test');
+    this.timeout(30000);
+    let driver;
+    const baseTest = createBaseTest('Positive Numbers Subtraction Test');
+
+    beforeEach(async function() {
+        driver = await baseTest.setup();
+    });
+
+    afterEach(async function() {
+        await baseTest.teardown(driver, this.currentTest.title);
+    });
 
     it('Subtracts positive numbers correctly', async function() {
         await driver.get("http://localhost:8000/");
@@ -116,9 +142,19 @@ describe('Positive Numbers Subtraction Test', function() {
     });
 });
 
-// 4. Decimal Numbers Subtraction Test
+// Decimal Numbers Subtraction Test
 describe('Decimal Numbers Subtraction Test', function() {
-    const { driver, fs } = createBaseTest('Decimal Numbers Subtraction Test');
+    this.timeout(30000);
+    let driver;
+    const baseTest = createBaseTest('Decimal Numbers Subtraction Test');
+
+    beforeEach(async function() {
+        driver = await baseTest.setup();
+    });
+
+    afterEach(async function() {
+        await baseTest.teardown(driver, this.currentTest.title);
+    });
 
     it('Subtracts decimal numbers correctly', async function() {
         await driver.get("http://localhost:8000/");
@@ -140,9 +176,19 @@ describe('Decimal Numbers Subtraction Test', function() {
     });
 });
 
-// 5. Large Numbers Subtraction Test
+// Large Numbers Subtraction Test
 describe('Large Numbers Subtraction Test', function() {
-    const { driver, fs } = createBaseTest('Large Numbers Subtraction Test');
+    this.timeout(30000);
+    let driver;
+    const baseTest = createBaseTest('Large Numbers Subtraction Test');
+
+    beforeEach(async function() {
+        driver = await baseTest.setup();
+    });
+
+    afterEach(async function() {
+        await baseTest.teardown(driver, this.currentTest.title);
+    });
 
     it('Subtracts large numbers correctly', async function() {
         await driver.get("http://localhost:8000/");
@@ -164,9 +210,19 @@ describe('Large Numbers Subtraction Test', function() {
     });
 });
 
-// 6. Reset Functionality Test
+// Reset Functionality Test
 describe('Reset Functionality Test', function() {
-    const { driver, fs } = createBaseTest('Reset Functionality Test');
+    this.timeout(30000);
+    let driver;
+    const baseTest = createBaseTest('Reset Functionality Test');
+
+    beforeEach(async function() {
+        driver = await baseTest.setup();
+    });
+
+    afterEach(async function() {
+        await baseTest.teardown(driver, this.currentTest.title);
+    });
 
     it('Resets calculator fields', async function() {
         await driver.get("http://localhost:8000/");
@@ -198,9 +254,19 @@ describe('Reset Functionality Test', function() {
     });
 });
 
-// 7. Addition Test
+// Addition Test
 describe('Addition Test', function() {
-    const { driver, fs } = createBaseTest('Addition Test');
+    this.timeout(30000);
+    let driver;
+    const baseTest = createBaseTest('Addition Test');
+
+    beforeEach(async function() {
+        driver = await baseTest.setup();
+    });
+
+    afterEach(async function() {
+        await baseTest.teardown(driver, this.currentTest.title);
+    });
 
     it('Performs addition correctly', async function() {
         await driver.get("http://localhost:8000/");
