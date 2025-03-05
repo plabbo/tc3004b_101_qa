@@ -19,29 +19,30 @@ jobs:
       with:
         node-version: 20
 
-    - name: Install Chrome and ChromeDriver
+    - name: Install Chrome
       uses: browser-actions/setup-chrome@v1
       with:
         chrome-version: stable
-        install-dependencies: true
 
-    - name: Get ChromeDriver Version
+    - name: Get Chrome Version
+      id: chrome-version
       run: |
-        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f 3 | cut -d '.' -f 1)
-        echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_ENV
-        CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
-        echo "CHROMEDRIVER_VERSION=$CHROMEDRIVER_VERSION" >> $GITHUB_ENV
+        CHROME_FULL_VERSION=$(google-chrome --version | cut -d ' ' -f 3)
+        CHROME_MAJOR_VERSION=$(echo $CHROME_FULL_VERSION | cut -d '.' -f 1)
+        echo "Chrome version: $CHROME_FULL_VERSION"
+        echo "Chrome major version: $CHROME_MAJOR_VERSION"
+        echo "major_version=$CHROME_MAJOR_VERSION" >> $GITHUB_OUTPUT
 
-    - name: Download and Install ChromeDriver
+    - name: Install ChromeDriver
+      env:
+        CHROME_MAJOR_VERSION: ${{ steps.chrome-version.outputs.major_version }}
       run: |
-        wget https://chromedriver.storage.googleapis.com/${{ env.CHROMEDRIVER_VERSION }}/chromedriver_linux64.zip
+        CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION})
+        echo "Latest ChromeDriver version for Chrome $CHROME_MAJOR_VERSION: $CHROMEDRIVER_VERSION"
+        wget https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
-
-    - name: Verify Chrome and ChromeDriver Installation
-      run: |
-        google-chrome --version
         chromedriver --version
 
     - name: Install Dependencies
