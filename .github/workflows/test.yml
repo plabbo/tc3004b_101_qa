@@ -1,0 +1,57 @@
+name: Run Tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main 
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install Chrome
+      uses: browser-actions/setup-chrome@v1
+      with:
+        chrome-version: stable
+
+    - name: Install ChromeDriver
+      run: |
+        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f 3)
+        CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
+        echo "Chrome version: $CHROME_VERSION"
+        echo "Chrome major version: $CHROME_MAJOR_VERSION"
+        
+        # Manually specify the latest known stable ChromeDriver version
+        CHROMEDRIVER_VERSION="120.0.6099.109"
+        
+        echo "Using ChromeDriver version: $CHROMEDRIVER_VERSION"
+        wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+        unzip chromedriver_linux64.zip
+        sudo mv chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
+        chromedriver --version
+
+    - name: Install Dependencies
+      run: |
+        npm install
+        npm install chromedriver@latest
+
+    - name: Start Web Server
+      run: python3 -m http.server 8000 &  
+      working-directory: ./src
+
+    - name: Run Selenium Tests
+      run: npm test
+      env:
+        CHROME_BIN: /usr/bin/google-chrome
+        SELENIUM_BROWSER: chrome
