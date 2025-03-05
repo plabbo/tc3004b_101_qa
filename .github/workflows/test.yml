@@ -24,29 +24,27 @@ jobs:
       with:
         chrome-version: stable
 
-    - name: Get Chrome Version
-      id: chrome-version
-      run: |
-        CHROME_FULL_VERSION=$(google-chrome --version | cut -d ' ' -f 3)
-        CHROME_MAJOR_VERSION=$(echo $CHROME_FULL_VERSION | cut -d '.' -f 1)
-        echo "Chrome version: $CHROME_FULL_VERSION"
-        echo "Chrome major version: $CHROME_MAJOR_VERSION"
-        echo "major_version=$CHROME_MAJOR_VERSION" >> $GITHUB_OUTPUT
-
     - name: Install ChromeDriver
-      env:
-        CHROME_MAJOR_VERSION: ${{ steps.chrome-version.outputs.major_version }}
       run: |
-        CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION})
-        echo "Latest ChromeDriver version for Chrome $CHROME_MAJOR_VERSION: $CHROMEDRIVER_VERSION"
-        wget https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
+        CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f 3)
+        CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d '.' -f 1)
+        echo "Chrome version: $CHROME_VERSION"
+        echo "Chrome major version: $CHROME_MAJOR_VERSION"
+        
+        # Manually specify the latest known stable ChromeDriver version
+        CHROMEDRIVER_VERSION="120.0.6099.109"
+        
+        echo "Using ChromeDriver version: $CHROMEDRIVER_VERSION"
+        wget https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
         sudo chmod +x /usr/local/bin/chromedriver
         chromedriver --version
 
     - name: Install Dependencies
-      run: npm install
+      run: |
+        npm install
+        npm install chromedriver@latest
 
     - name: Start Web Server
       run: python3 -m http.server 8000 &  
