@@ -4,7 +4,7 @@
   "description": "test for web application",
   "main": "",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha tests/*.js"
   },
   "author": "",
   "license": "ISC",
