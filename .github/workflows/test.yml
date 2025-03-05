@@ -30,17 +30,13 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
-      working-directory: ./tests
 
     - name: Start Web Server
       run: python3 -m http.server 8000 &  
       working-directory: ./src
 
     - name: Run Selenium Tests
-      run: |
-        ./node_modules/.bin/mocha *.js
-      working-directory: ./tests
+      run: npm test
       env:
         CHROME_BIN: /usr/bin/google-chrome
         SELENIUM_BROWSER: chrome
-

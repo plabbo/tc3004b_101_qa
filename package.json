@@ -1,0 +1,17 @@
+{
+  "name": "calculator-app",
+  "version": "1.0.0",
+  "description": "Simple web calculator",
+  "scripts": {
+    "test": "cd tests && mocha *.js"
+  },
+  "dependencies": {
+    "mocha": "^11.1.0",
+    "selenium-webdriver": "^4.28.1",
+    "chrome-webdriver": "^89.0.0",
+    "chromedriver": "^110.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7"
+  }
+}
